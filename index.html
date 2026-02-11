@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine's Day Card Creator</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <div id="cardCreator">
+        <h1>Create Your Valentine's Day Card</h1>
+        <textarea id="messageInput" placeholder="Type your message here..."></textarea>
+        <div id="previewContainer">
+            <h2>Preview</h2>
+            <div id="cardPreview"></div>
+        </div>
+        <input type="color" id="colorPicker" />
+        <button id="downloadBtn">Download as Image</button>
+        <button id="shareBtn">Share</button>
+        <p id="charCount">Character Count: 0</p>
+    </div>
+    <script>
+        const messageInput = document.getElementById('messageInput');
+        const cardPreview = document.getElementById('cardPreview');
+        const charCount = document.getElementById('charCount');
+        const colorPicker = document.getElementById('colorPicker');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const shareBtn = document.getElementById('shareBtn');
+
+        // Update preview in real-time
+        messageInput.addEventListener('input', () => {
+            cardPreview.innerText = messageInput.value;
+            charCount.innerText = `Character Count: ${messageInput.value.length}`;
+        });
+
+        // Change card color
+        colorPicker.addEventListener('input', () => {
+            cardPreview.style.backgroundColor = colorPicker.value;
+        });
+
+        // Download functionality
+        downloadBtn.addEventListener('click', () => {
+            html2canvas(cardPreview).then(canvas => {
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL();
+                link.download = 'valentines-card.png';
+                link.click();
+            });
+        });
+
+        // Share functionality
+        shareBtn.addEventListener('click', () => {
+            const message = messageInput.value;
+            const encodedMessage = encodeURIComponent(message);
+            const shareLink = `${window.location.href}?message=${encodedMessage}`;
+            navigator.clipboard.writeText(shareLink).then(() => {
+                alert('Shareable link copied to clipboard!');
+            });
+        });
+
+        // LocalStorage support
+        window.onload = () => {
+            const savedMessage = localStorage.getItem('valentinesMessage');
+            if (savedMessage) {
+                messageInput.value = savedMessage;
+                cardPreview.innerText = savedMessage;
+            }
+        };
+
+        messageInput.addEventListener('input', () => {
+            localStorage.setItem('valentinesMessage', messageInput.value);
+        });
+    </script>
+</body>
+</html>
